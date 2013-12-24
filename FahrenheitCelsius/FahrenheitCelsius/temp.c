@@ -1,43 +1,59 @@
 #include <stdio.h>
 
+// Symbolic constants
+#define LOWER	0 /* Lower bound */
+#define UPPER	300 /* Upper bound */
+#define STEP	20 /* Incremental size */
+
 /*
 Prints temperature conversions.
 */
 main() {
 	float fahr, celsius;
-	float lower, upper, step;
-	lower = 0; // Starting point
-	upper = 300; // End condition
-	step = 20; // Increment size
-	fahr = lower; // Initialize to starting point
+	fahr = LOWER; // Initialize to starting point
 	// Print a heading (Exercise 1-3)
 	printf("%3c\t%6c\n", 'F', 'C');
 	//  Loop through
-	while (fahr <= upper) {
+	while (fahr <= UPPER) {
 		celsius = (5.0 / 9.0) * (fahr - 32); // Compute
 		printf("%3.0f\t%6.1f\n", fahr, celsius); // Modify and format output
 		// fahr printed at least 3 chars wide with no decimal point
 		// celsius to be printed at least six characters wide with 1 digit after the decimal
-		fahr = fahr + step; // Step to the next iteration
+		fahr = fahr + STEP; // Step to the next iteration
 	}
+	printf("Now do a conversion with the same bounds from Celsius to Fahrenheit.\n");
 	celsiusToFahr();
+	printf("Repeat the first conversion using a for loop.\n");
+	fahrToCelsiusForLoop();
+	printf("Repeat the first conversion in reverse using a for loop.\n");
+	fahrToCelsiusReverse();
 	getch();
 }
 
 // Program to convert celsius to fahrenheit (Exercise 1-4)
 celsiusToFahr() {
 	float fahr, celsius;
-	float lower, upper, step;
-	lower = 0; // Starting point
-	upper = 300; // End condition
-	step = 20; // Increment size
-	celsius = lower; // Initialize to starting point
+	celsius = LOWER; // Initialize to starting point
 	// Print a heading
 	printf("%6c\t%3c\n", 'C', 'F');
 	// Loop through
-	while (celsius <= upper) {
+	while (celsius <= UPPER) {
 		fahr = (9.0 / 5.0) * celsius + 32; // Compute
 		printf("%6.1f\t%3.0f\n", celsius, fahr);
-		celsius = celsius + step;
+		celsius = celsius + STEP;
 	}
+}
+
+// For statement that does the same conversion
+fahrToCelsiusForLoop() {
+	int fahr;
+	for (fahr = LOWER; fahr <= UPPER; fahr = fahr + STEP)
+		printf("%3d %6.1f\n", fahr, (5.0 / 9.0) * (fahr - 32));
+}
+
+// For statement that does the conversion in reverse (Exercise 1-5)
+fahrToCelsiusReverse() {
+	int fahr;
+	for (fahr = UPPER; fahr >= LOWER; fahr = fahr - STEP)
+		printf("%3d %6.1f\n", fahr, (5.0 / 9.0) * (fahr - 32));
 }
