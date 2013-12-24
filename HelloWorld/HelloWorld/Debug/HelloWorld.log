@@ -1,0 +1,9 @@
+﻿Build started 12/24/2013 3:06:48 PM.
+     1>Project "C:\Users\Christopher Zhang\Dropbox\Computer_Science\C\HelloWorld\HelloWorld\HelloWorld.vcxproj" on node 2 (Build target(s)).
+     1>Link:
+         HelloWorld.vcxproj -> C:\Users\Christopher Zhang\Dropbox\Computer_Science\C\HelloWorld\Debug\HelloWorld.exe
+     1>Done Building Project "C:\Users\Christopher Zhang\Dropbox\Computer_Science\C\HelloWorld\HelloWorld\HelloWorld.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:00.19
