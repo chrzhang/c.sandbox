@@ -19,7 +19,7 @@ main() {
 	// Back-slash
 	printf("\n\nBack-slash\n");
 	printf("Hello, World!\\Take me to your leader.");
-	// Bad escape-sequence
+	// Bad escape-sequence (Exercise 1-2)
 	printf("\n\nBad escape-sequence\n");
 	printf("Hello, World!\cTake me to your leader.");
 	getch();
