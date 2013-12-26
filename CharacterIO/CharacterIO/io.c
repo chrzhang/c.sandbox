@@ -1,6 +1,6 @@
 #include <stdio.h>
 #define IN	1 /* in a word */
-#define OUT 0 /* not in a word */
+#define OUT	0 /* not in a word */
 
 /* Copy input to output. */
 main() {
