@@ -2,8 +2,11 @@
 #define IN	1
 #define OUT	0
 
+int printHistogram();
+int printFrequencies();
+
 /* Count digits, white-space, other */
-main() {
+int main() {
 	int c, i, nwhite, nother;
 	int ndigit[10]; // Declare an array
 	nwhite = nother = 0;
@@ -26,6 +29,7 @@ main() {
 	printf("Print frequencies of various character occurrences.\n");
 	printFrequencies();
 	getch();
+	return 0;
 }
 
 /* (Exercise 1-13) Print a histogram of lengths of words in input.

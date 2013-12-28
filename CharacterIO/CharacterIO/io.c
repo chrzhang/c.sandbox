@@ -2,8 +2,17 @@
 #define IN	1 /* in a word */
 #define OUT	0 /* not in a word */
 
+int characterCount1();
+int characterCount2();
+int lineCount();
+int blankTabNLCount();
+int limitBlanks();
+int replaceEscapeSeqs();
+int lnWordCharCount();
+int printOneWordPerLine();
+
 /* Copy input to output. */
-main() {
+int main() {
 	int c; // Can store any character as well as EOF
 	printf("What is the value of EOF?\n"); // (Exercise 1.7)
 	printf("%d\n", EOF);
@@ -30,6 +39,7 @@ main() {
 	printOneWordPerLine();
 	// NOTE: On Windows, Ctrl+Z gives the EOF character
 	getch();
+	return 0;
 }
 
 /* Count characters in input. */
@@ -155,4 +165,5 @@ int printOneWordPerLine() {
 		else
 			putchar(c);
 	}
+	return 0;
 }

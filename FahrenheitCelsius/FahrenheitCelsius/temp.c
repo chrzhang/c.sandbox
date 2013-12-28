@@ -5,10 +5,14 @@
 #define UPPER	300 /* Upper bound */
 #define STEP	20 /* Incremental size */
 
+int celsiusToFahr();
+int fahrToCelsiusForLoop();
+int fahrToCelsiusReverse();
+
 /*
 Prints temperature conversions.
 */
-main() {
+int main() {
 	float fahr, celsius;
 	fahr = LOWER; // Initialize to starting point
 	// Print a heading (Exercise 1-3)
@@ -28,10 +32,11 @@ main() {
 	printf("Repeat the first conversion in reverse using a for loop.\n");
 	fahrToCelsiusReverse();
 	getch();
+	return 0;
 }
 
 // Program to convert celsius to fahrenheit (Exercise 1-4)
-celsiusToFahr() {
+int celsiusToFahr() {
 	float fahr, celsius;
 	celsius = LOWER; // Initialize to starting point
 	// Print a heading
@@ -42,18 +47,21 @@ celsiusToFahr() {
 		printf("%6.1f\t%3.0f\n", celsius, fahr);
 		celsius = celsius + STEP;
 	}
+	return 0;
 }
 
 // For statement that does the same conversion
-fahrToCelsiusForLoop() {
+int fahrToCelsiusForLoop() {
 	int fahr;
 	for (fahr = LOWER; fahr <= UPPER; fahr = fahr + STEP)
 		printf("%3d %6.1f\n", fahr, (5.0 / 9.0) * (fahr - 32));
+	return 0;
 }
 
 // For statement that does the conversion in reverse (Exercise 1-5)
-fahrToCelsiusReverse() {
+int fahrToCelsiusReverse() {
 	int fahr;
 	for (fahr = UPPER; fahr >= LOWER; fahr = fahr - STEP)
 		printf("%3d %6.1f\n", fahr, (5.0 / 9.0) * (fahr - 32));
+	return 0;
 }

@@ -3,7 +3,7 @@
 /* 
 Experiment with escape sequences 
 */
-main() {
+int main() {
 	// New-line
 	printf("New-line\n");
 	printf("Hello, World!\nTake me to your leader."); 
@@ -23,4 +23,5 @@ main() {
 	printf("\n\nBad escape-sequence\n");
 	printf("Hello, World!\cTake me to your leader.");
 	getch();
+	return 0;
 }
