@@ -2,6 +2,8 @@
 #define MAXLINE	1000
 #define COL_WIDTH 5
 
+int getline(char line[]);
+
 /*
 (Exercise 1-22)
 Fold long input lines into 2 or more shorter lines after the last non-blank char
