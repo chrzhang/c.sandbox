@@ -67,7 +67,7 @@ void itoamod(int n, char s[], int minFieldWidth) {
 		for (int i = numZeroes; i < (length + numZeroes); ++i) {
 			s[i] = sTemp[i - numZeroes]; // Copy over everything else
 		}
-		s[length+numZeroes] = '\0';
+		s[length + numZeroes] = '\0';
 	}
 	else {
 		// Reassign s
