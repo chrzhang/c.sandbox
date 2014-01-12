@@ -17,8 +17,6 @@
 void push(double);
 double pop(void);
 int getop(char[]);
-int getch(void);
-void ungetch(int);
 int getline();
 
 /*
@@ -27,7 +25,7 @@ Add the commands to print the top elements of the stack without popping, to
 duplicate it, and to swap the top two elements. Add a command to clear the stack.
 */
 void top(); // Prints stack's top
-void duplicateStack(); 
+void duplicateStack(); // Returns a pointer to a copy
 void topSwap(); // Swaps top two elements
 void clear(); // Clear current stack
 
@@ -39,14 +37,14 @@ void doMathFn(char s[]);
 Add commands for handling variables. (It's easy to provide twenty-six variables
 with single-letter names.) Add a variable for the most recently printed value.
 
-A calculator typically allows users to define variables using the alphabet and Greek letters. 
+A calculator typically allows users to define variables using the alphabet and Greek letters.
 Only the 26 English alphabetical characters in their CAPITALIZED forms will be used.
 They will be stored with an alpha-char for name, a double value, and an int flag (1 or 0)
 for whether or not the variable has been assigned (with the = operator) by the user.
 
 To allow user to interact with variables, allow
 1. assignment operator (=)
-	usage: "A = 10.0" supported, variable name 'A' must come first, followed by '=' then its value
+usage: "A = 10.0" supported, variable name 'A' must come first, followed by '=' then its value
 2. using variables instead of values
 3. printing all currently used variables
 4. resetting all variables
@@ -57,36 +55,6 @@ double values[26]; // Contain the values for each variable
 double recent; // Store the last printed value, use ^ to ref
 void printVars(); // Print currently assigned variables
 void resetVars(); // Reset all variables to 0
-
-/*
-(Exercise 4-7)
-Write a routine ungets(s) that will push back an entire string onto the input.
-Should ungets know about buf and bufp, or should it just use ungetch?
-
-It should know about buf and bufp to do quick check to see if the entire length
-of s may be pushed back. Otherwise, it would iteratively add each char
-of s blindly. If only a fraction of the string can be un-gotten, it would push back part
-of the string , resulting in unexpected outcome.
-
-However, besides the check, ungets(s) uses ungetch(c) so code will not have to be
-copy-pasted and reusability is good.
-*/
-void ungets(char s[]);
-
-/*
-(Exercise 4-8)
-Suppose that there will never be more than one character of pushback. Modify
-getch and ungetch accordingly.
-
-If there is never more than one char of pushback, the buffer array need only be one item
-in capacity. This can simply be an int var.
-The operations to unget would simply use that one element or getchar() if
-it's null rather than decrement. This would also remove the need for a bufp variable.
-
-Rather than replace the code in the original, alternate methods are used.
-*/
-int getchOneChar(void);
-void ungetchOneChar(char c);
 
 int sp = 0; /* next free stack position */
 int spCopy = -1;
@@ -113,11 +81,13 @@ double pop(void) {
 
 /* getop: get next character or numeric operand */
 int getop(char s[]) {
+	// With the addition of getline, guaranteed no leading or trailing white-space
 	int i, c;
-	while ((s[0] = c = getch()) == ' ' || c == '\t')
-		; // Skip white-space
-	// s[0] and c now contain a non-space/tab
-	s[1] = '\0'; // Ignore everything after it
+	// ASSIGNMENT
+	if (s[1] == '=') { // Without making the program too complex, assume assignment has no spaces ("A=5" is supported)
+		return ASSIGNMENT;
+	}
+	c = s[0];
 	// RECENT
 	if (c == '^') {
 		return RECENT; // Most recently output value, a double
@@ -125,17 +95,7 @@ int getop(char s[]) {
 	// OPERAND
 	if (!isdigit(c) && c != '.' && !isalpha(c)) // Added condition that c is not a letter, which is part of a fn
 		return c; /* not a number, a decimal, a space, a tab, nor a letter, hence it must be an operand */
-	// ASSIGNMENT
-	if (isalpha(c) && (c >= 'A' && c <= 'Z')) {
-		char d;
-		// Skip white-space
-		while ((d = getch()) == ' ' || c == '\t')
-			; // Skip white-space
-		if (d == '=')
-			return ASSIGNMENT;
-		else
-			ungetch(d);
-	}
+	
 	// VARIABLE
 	if (isalpha(c) && (c >= 'A' && c <= 'Z')) {
 		// This variable may have formerly been assigned or is being assigned
@@ -144,9 +104,8 @@ int getop(char s[]) {
 	// MATHS
 	i = 0;
 	if (isalpha(c)) { // Letter detected
-		while (isalpha(s[++i] = c = getch())) /* collect letter part */
+		while (isalpha(s[++i])) /* collect letter part */
 			;
-		s[i] = '\0';
 		if (c != EOF)
 			ungetch(c);
 		return MATHS;
@@ -154,80 +113,14 @@ int getop(char s[]) {
 	// NUMBER
 	i = 0;
 	if (isdigit(c)) /* collect integer part */
-		while (isdigit(s[++i] = c = getch()))
-			;
-	if (c == '.') /* collect fraction part */
-		while (isdigit(s[++i] = c = getch()))
-			;
-	s[i] = '\0';
+	while (isdigit(s[++i]))
+		;
+	if (s[i] == '.') /* collect fraction part */
+	while (isdigit(s[++i]))
+		;
 	if (c != EOF)
 		ungetch(c); // "un-read" next character that's not a part of the #
 	return NUMBER;
-}
-
-char buf[BUFSIZE]; /* buffer for ungetch */
-int bufp = 0; /* next free position in buf */
-
-/*
-(Exercise 4-9)
-Our getch and ungetch do not handle a pushed-back EOF correctly. Decide
-what their properties ought to be if an EOF is pushed back, then implement your design.
-
-Fire a wrning when getch() finds an EOF. 
-When ungetch(c) attempts to push back an EOF, prevent it from doing so.
-*/
-/* get a (possibly pushed-back) character */
-int getch(void) {
-	int ret = (bufp > 0) ? buf[--bufp] : getchar();
-	if (ret == EOF) {
-		printf("Warning. EOF detected.\n");
-	}
-	return ret;
-}
-
-/* push character back on input */
-void ungetch(int c) {
-	if (c == EOF) {
-		printf("Warning. EOF detected.\n");
-		return;
-	}
-	if (bufp >= BUFSIZE)
-		printf("ungetch: too many characters\n");
-	else
-		buf[bufp++] = c;
-}
-
-// Exercise 4-7 cont.
-void ungets(char s[]) {
-	size_t length = strlen(s);
-	if (length + bufp >= BUFSIZE)
-		printf("ungets: string too long\n");
-	else {
-		while (length > 0)
-			ungetch(s[--length]);
-	}
-}
-
-// Exercise 4-8 cont.
-int bufOneChar = EOF;
-
-int getchOneChar(void) {
-	int ret;
-	if (bufOneChar == EOF)
-		ret = getchar();
-	else {
-		ret = bufOneChar;
-		// Reset "buffer"
-		bufOneChar = EOF;
-	}
-	return ret;
-}
-
-void ungetchOneChar(char c) {
-	if (buf != EOF)
-		printf("ungetch error: buffer full\n");
-	else
-		bufOneChar = c;
 }
 
 // Exercise 4-4 cont.
@@ -276,7 +169,7 @@ void doMathFn(char s[]) {
 	else if (strcmp(s, "pow") == 0) {
 		// Requires two operands
 		double powerMaybe = pop();
-		if (powerMaybe != (int) powerMaybe) {
+		if (powerMaybe != (int)powerMaybe) {
 			printf("The desired power %g is not an integer.\n", powerMaybe);
 			return;
 		}
@@ -301,23 +194,26 @@ void resetVars() {
 		visited[i] = 0;
 	}
 }
-/* reverse Polish calculator */
-int main() {
-	char receiverOn = 0; // Char to hold variable name during assignment
-	printf("\tA Postfix Calculator.\nPlease use single capital characters as variables.\n");
+
+/*
+(Exercise 4-10)
+An alternate organization uses getline to read an entire input line; this makes
+getch and ungetch unnecessary. Revise the calculator to use this approach.
+*/
+int getline(char s[], int lim) {
+	int c, i;
+	i = 0;
+	while (--lim > 0 && (c = getchar()) != EOF && c != '\n')
+		s[i++] = c;
+	s[i] = '\0';
+	return i;
+}
+
+void processWord(char s[]) {
 	int type; // Hold whether symbol is a number or an op
 	double op2; // Hold for additional operand in non-commutative ops like - or /
-	char s[MAXOP];
-	while ((type = getop(s)) != EOF) {
-		// Assignment is not written in post-fix
-		if (receiverOn >= 'A' && receiverOn <= 'Z') {
-			// Assign the value to receiverOn
-			values[receiverOn - 'A'] = atof(s);
-			visited[receiverOn - 'A'] = 1;
-			receiverOn = 0;
-			continue;
-		}
-		switch (type) {
+	type = getop(s);
+	switch (type) {
 		case NUMBER:
 			push(atof(s));
 			break;
@@ -342,7 +238,7 @@ int main() {
 		(Exercise 4-3)
 		Given the basic framework, it's straightforward to extend the calculator. Add the
 		modulus (%) operator and provisions for negative numbers.
-		*/
+		*/ 
 		case '%':
 			op2 = pop();
 			if (op2 != 0.0) { // Cannot divide by zero
@@ -381,26 +277,63 @@ int main() {
 			}
 			break;
 		case ASSIGNMENT:
-			// Turn on receiver
-			receiverOn = s[0]; // (the next string read in will be assigned)
+			// Assignment is not written in post-fix
+			if (s[0] >= 'A' && s[0] <= 'Z') { // Ensure var name valid
+				// Assign the value to receiverOn
+				char numberStr[MAXLINE];
+				for (int i = 2; s[i] != '\0' && s[i] != '\n'; ++i) {
+					numberStr[i - 2] = s[i];
+				}
+				values[s[0] - 'A'] = atof(numberStr);
+				visited[s[0] - 'A'] = 1;
+				return;
+			}
+			else {
+				printf("Assignment attempt detected. Please use capital single-letter variables and the assignment should not have spaces.");
+			}
 			break;
 		case RECENT:
 			printf("recent\n");
 			push(recent);
 			break;
-		case '\n':
-			if (sp > 0) {
-				// Store the result
-				recent = val[sp-1];
-				printf("\t%.8g\n", pop()); // Print the answer
-			}
-			break;
 		default:
 			printf("error: unknown command %s\n", s);
 			break;
+	}
+}
+
+/* reverse Polish calculator */
+int main() {
+	printf("\tA Postfix Calculator.\nPlease use single capital characters as variables.\n");
+	char s[MAXOP];
+	char line[MAXLINE];
+	int len;
+	// For each line to be evaluated
+	while ((len = getline(line, MAXLINE)) > 0) {
+		int i = 0;
+		int state = 0;
+		int j = 0;
+		while (i < len) {
+			if (line[i] == ' ' || (i+1 == len)) {
+				if (i + 1 == len)
+					s[j++] = line[i];
+				s[j] = '\0';
+				processWord(s);
+				state = 0;
+				j = 0;
+			}
+			else
+				state = 1;
+			if (state)
+				s[j++] = line[i];
+			++i;
+		}
+		if (sp > 0) {
+			// Store the result
+			recent = val[sp - 1];
+			printf("\t%.8g\n", pop()); // Print the answer
 		}
 	}
-
 	printf(">>> Testing the stack functions.\n");
 	printf("Clearing stack.\n");
 	clear();
