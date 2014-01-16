@@ -12,6 +12,12 @@ static char daytab[2][13] = {
 (Exercise 5-8)
 There is no error checking in day_of_year or month_day.
 Remedy this defect.
+
+and
+
+(Exercise 5-9)
+Rewrite the routines day_of_year and month_day with pointers instead of
+indexing.
 */
 
 /* day_of_year: set day of year from month & day */
@@ -33,9 +39,13 @@ int day_of_year(int year, int month, int day) {
 		printf("There are only %d days in this month.\n", daytab[leap][month]);
 		return -1;
 	}
-	for (i = 1; i < month; i++)
+	
+	for (i = 1; i < month; i++) {
 		// Choose from the two calendars based on whether 0 or 1 (as indices) it's a leap year
-		day += daytab[leap][i]; 
+		//day += daytab[leap][i];
+		day += *(*(daytab + leap) + i);
+	}
+		
 	return day;
 }
 
@@ -55,8 +65,10 @@ void month_day(int year, int yearday, int *pmonth, int *pday) {
 		printf("It's not a leap year so the day-of-year cannot be 366.\n");
 		return -1;
 	}
-	for (i = 1; yearday > daytab[leap][i]; i++)
-		yearday -= daytab[leap][i];
+	//for (i = 1; yearday > daytab[leap][i]; i++)
+	//	yearday -= daytab[leap][i];
+	for (i = 1; yearday > *(*(daytab + leap) + i); i++)
+		yearday -= *(*(daytab + leap) + i);
 	*pmonth = i;
 	*pday = yearday;
 }
@@ -76,10 +88,12 @@ main() {
 			//printf("Day of Year: %d -> Month: %d Day: %d\n", doy, *month, *day);
 			if (i != *month) {
 				printf("Months are inaccurate.\n");
+				getch();
 				return;
 			}
 			if (j != *day) {
 				printf("Days are inaccurate.\n");
+				getch();
 				return;
 			}
 		}
@@ -92,6 +106,7 @@ main() {
 	month_day(2014, 366, month, day); // A leap day on a non-leap year
 	month_day(-2014, 365, month, day); // Negative year
 	month_day(0, 365, month, day); // Zero year
+
 	getch();
 	return 0;
 }
