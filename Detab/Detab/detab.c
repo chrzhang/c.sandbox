@@ -31,8 +31,7 @@ int setline(char line[]) { // Arrays are not passed by value
 			}
 			i += TABWIDTH-1;
 		}
-		else
-		{
+		else {
 			line[i] = c;
 		}
 	}
