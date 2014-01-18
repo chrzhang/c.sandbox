@@ -1,12 +1,11 @@
 #include <stdio.h>
 #define MAXLINES 5000 /* max #lines to be sorted */
 #define MAXLEN 1000 /* max length of any input line */
-#define SPACE	5000 // Storage for alloc alternative
+
 char *lineptr[MAXLINES]; /* pointers to text lines */
 
 int getline(char *, int);
 int readlines(char *lineptr[], int nlines);
-int readlinesFAST(char *lineptr[], char *buff, int nlines);
 void writelines(char *lineptr[], int nlines);
 void qsort(char *lineptr[], int left, int right);
 char *alloc(int);
@@ -23,17 +22,8 @@ main() {
 		printf("error: input too big to sort\n");
 		return 1;
 	}
-	char lines[MAXLINES];
-	char *start = lines;
-	if ((nlines = readlinesFAST(lineptr, start, MAXLINES)) >= 0) {
-		qsort(lineptr, 0, nlines - 1);
-		writelines(lineptr, nlines);
-	}
-	else {
-		printf("error: input too big to sort\n");
-		return 1;
-	}
-	getch();
+
+	getchar();
 	return 0;
 }
 
@@ -90,34 +80,6 @@ int readlines(char *lineptr[], int maxlines) {
 	return nlines;
 }
 
-/*
-(Exercise 5-7)
-Rewrite readlines to store lines in an array supplied by main, rather than
-calling alloc to maintain storage. How much faster is the program?
-*/
-/* readlines: read input lines */
-int readlinesFAST(char *lineptr[], char *start, int maxlines) {
-	int len, currentLine;
-	currentLine = 0;
-	char line[MAXLEN];
-	char *p = start;
-	char * stop = start + SPACE;
-	int wouldBeAllocCounter = 0;
-	while ((len = getline(line, MAXLEN)) > 0) {
-		++wouldBeAllocCounter;
-		if (currentLine >= maxlines || p + len > stop) // If the whole line is too big or too many lines
-			return -1; // Too many lines for further reading
-		else {
-			line[len - 1] = '\0'; // Delete newline
-			strcpy(p, line);
-			lineptr[currentLine++] = p; // Replace newline
-			p += len;
-		}
-	}
-	printf("Skipped %d calls to alloc().\n", wouldBeAllocCounter);
-	return currentLine;
-}
-
 /* writelines: write output lines */
 void writelines(char *lineptr[], int nlines) {
 	while (nlines-- > 0)
@@ -133,8 +95,8 @@ void qsort(char *v[], int left, int right) {
 	swap(v, left, (left + right) / 2);
 	last = left;
 	for (i = left + 1; i <= right; i++)
-		if (strcmp(v[i], v[left]) < 0)
-			swap(v, ++last, i);
+	if (strcmp(v[i], v[left]) < 0)
+		swap(v, ++last, i);
 	swap(v, left, last);
 	qsort(v, left, last - 1);
 	qsort(v, last + 1, right);
