@@ -22,7 +22,8 @@ input or the value of n. Write the program so it makes the best use of available
 should be stored as in the sorting program of Section 5.6, not in a two-dimensional array of
 fixed size.
 
-Since the order is irrelevant, have a buffer of the desired input size which wraps with each writing of each new line.
+Since the order is irrelevant, have a buffer of the desired input size which wraps with each
+writing of each new line.
 */
 main(int argc, char *argv[]) {
 	int tailAmount = 10;
