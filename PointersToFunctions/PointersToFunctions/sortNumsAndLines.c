@@ -32,19 +32,15 @@ main(int argc, char *argv[]) {
 		while (c = *++argv[0]) {
 			switch (c) {
 			case 'n':
-				printf("Numerical sort it is!\n");
 				numeric = 1;
 				break;
 			case 'r':
-				printf("Reverse sort it is!\n");
 				reverse = 1;
 				break;
 			case  'f':
-				printf("Folding sort it is!\n");
 				foldCase = 1;
 				break;
 			case 'd':
-				printf("Directory mode!\n");
 				dirMode = 1;
 				break;
 			default:
