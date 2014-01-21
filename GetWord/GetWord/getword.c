@@ -29,7 +29,6 @@ main() {
 	int n;
 	char word[MAXWORD];
 	while (getwordFix(word, MAXWORD) != EOF) {
-		printf("word:%s\n", word);
 		if (isalpha(word[0]))
 			if ((n = binsearch(word, keytab, NKEYS)) >= 0) {
 				keytab[n].count++;
