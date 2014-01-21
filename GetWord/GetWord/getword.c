@@ -24,13 +24,12 @@ struct key {
 	"while", 0
 };
 
-static int inAQuote = 0;
-
 /* count C keywords */
 main() {
 	int n;
 	char word[MAXWORD];
 	while (getwordFix(word, MAXWORD) != EOF) {
+		printf("word:%s\n", word);
 		if (isalpha(word[0]))
 			if ((n = binsearch(word, keytab, NKEYS)) >= 0) {
 				keytab[n].count++;
@@ -100,7 +99,7 @@ First, how is the CURRENT version NOT properly "handling" each of the above?
 	A similar fix as above, except for " instead of _. However, in further study,
 	the keyword in quotes "char" will not be considered but " char " will. In both
 	cases, the keywords are used as part of a string constant and not as a keyword.
--comments (ex. "//" comments only)
+-comments
 	Since the desired input of this program is code, ignore what follows comments.
 	**For ignoring block comments, implement something similar to quotes with an inBlockQuote
 -preprocessor control lines
@@ -112,54 +111,55 @@ int getwordFix(char *word, int lim) {
 	int c, getch(void);
 	void ungetch(int);
 	char *w = word;
-	char *temp = word;
 	while (isspace(c = getch())) // Ignore whitespace
 		;
-	if (c != EOF) // Not at the end of the file, set the next char in word to the next non-space
+	if (c != EOF)// Not at the end of the file, set the next char in word to the next non-space
 		*w++ = c;
-	// If the next char is a space and this is not alpha, end the word
-	else { // Ah, the EOF!
-		*w = '\0';
+	else
 		return c;
-	}
-	if (!isalpha(c)) {
+	if (!isalpha(c)) { // If the char isn't a letter, end the current word
 		if (c == '\"') {
-			if (inAQuote)
-				inAQuote = 0; // Exited the quote
-			else {
-				inAQuote = 1;
-				// Get everything until the end of the quote
-				while ((c = getch()) != '\"')
+			printf("Entering a quote.\n");
+			// Get everything until the end of the quote
+			while ((c = getch()) != '\"')
+				if (c == EOF) {
+					printf("error: quote never ends.\n");
+					return EOF;
+				}
+		}
+		if (c == '/') {
+			if ((c = getch()) == '/') {
+				while ((c = getch()) != '\n')
 					if (c == EOF) {
-						printf("error: quote never ends.\n");
 						return EOF;
 					}
-				ungetch(c);
 			}
-		}
-		else if (c == '/') {
-			if ((c = getch()) == '/') {
-				// Ignore everything that follows, assuming the loop in main is called once per line in real-code application
-				return EOF;
+			else if (c == '*') {
+				// Entered a block comment
+				printf("entered a block comment\n");
+				while (c = getch()) {
+					if (c == '*') {
+						if ((c = getch()) == '/')
+							break;
+					}
+				}
 			}
 			else
 				ungetch(c);
 		}
-		else if (c == '#') {
-			// Ignore everything that follows, assuming the loop in main is called once per line in real-code application
-			return EOF;
-		}
-		if (isspace(*temp = getch())) { // Check for a succeeding space
+		if (isspace(c = getch())) { // Check for a succeeding space
 			*w = '\0';
 			return c; // Return the non-alpha char
 		}
-		else // Oops, succeeded by part of a word, give the char back
-			ungetch(*temp);
+		else { // Oops, succeeded by part of a word, give the char back
+			ungetch(c);
+		}
 	}
-	for (; --lim > 0; w++) // Now, provided the char was a letter, get the rest into w
-	if (!isalnum(*w = getch())) {
-		ungetch(*w); // Unget the non-alphanumeric part of that word
-		break;
+	for (; --lim > 0; w++) { // Now, provided the char was a letter, get the rest into w
+		if (!isalnum(*w = getch())) {
+			ungetch(*w); // Unget the non-alphanumeric part of that word
+			break;
+		}
 	}
 	*w = '\0'; // End the string
 	return word[0];
