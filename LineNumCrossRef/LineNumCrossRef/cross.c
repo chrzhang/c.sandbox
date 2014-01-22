@@ -16,6 +16,8 @@ void treeprint(struct tnode *);
 int getword(char *, int, unsigned int*);
 void strcpy2(char *s, char *t);
 
+int isNoise(char word[]);
+
 struct linkednode *nalloc(void);
 struct linkednode *addnode(struct linkednode *head, struct linkednode *next, unsigned int lineNum);
 void printll(struct linkednode *p);
@@ -37,6 +39,8 @@ struct linkednode {
 Write a cross-referencer that prints a list of all words in a document, and for
 each word, a list of the line numbers on which it occurs. Remove noise words like ``the,''
 ``and,'' and so on.
+
+The test for noise words is accomplished with strcmp.
 */
 /* word frequency count */
 main() {
@@ -47,7 +51,8 @@ main() {
 	unsigned int lineNum = 1;
 	while (getword(word, MAXWORD, &lineNum) != EOF) {
 		if (isalpha(word[0])) // If the first character is alplhabetical, add it to the tree
-			root = addtree(root, word, lineNum); // root always contains the first word
+			if (!isNoise(word))
+				root = addtree(root, word, lineNum); // root always contains the first word
 	}
 	treeprint(root); // Display the tree
 	return 0;
@@ -181,4 +186,9 @@ void strcpy2(char *s, char *t) {
 		s++;
 		t++;
 	}
+}
+
+int isNoise(char word[]) {
+	return (0 == strcmp(word, "and") ||
+		0 == strcmp(word, "the"));
 }
