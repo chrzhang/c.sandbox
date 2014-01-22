@@ -41,6 +41,7 @@ each word, a list of the line numbers on which it occurs. Remove noise words lik
 ``and,'' and so on.
 
 The test for noise words is accomplished with strcmp.
+used a linked list implementation hybrid with the given binary tree to store page numbers.
 */
 /* word frequency count */
 main() {
